@@ -1,0 +1,1190 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STARTUP TYCOON 🚀 - Business Strategy Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: #f5f5f5; 
+            color: #334155;
+            min-height: 100vh;
+        }
+        
+        /* Game Container */
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-bottom: 80px;
+        }
+        
+        /* Header */
+        .game-header {
+            background: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: #5A4FF3;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .stats-bar {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .stat-item {
+            text-align: right;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+        
+        .stat-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        
+        .market-indicator {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        
+        .market-bull { background: #d1fae5; color: #065f46; }
+        .market-bear { background: #fee2e2; color: #991b1b; }
+        .market-steady { background: #e2e8f0; color: #475569; }
+        
+        /* Main Content */
+        .main-content {
+            padding: 24px;
+        }
+        
+        /* Day Panel */
+        .day-panel {
+            background: #5A4FF3;
+            border-radius: 32px;
+            padding: 40px;
+            color: white;
+            text-align: center;
+            margin-bottom: 24px;
+            box-shadow: 0 20px 40px rgba(90, 79, 243, 0.15);
+        }
+        
+        .venture-type {
+            font-size: 10px;
+            color: rgba(255,255,255,0.7);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            margin-bottom: 8px;
+        }
+        
+        .day-number {
+            font-size: 64px;
+            font-weight: 800;
+            margin-bottom: 40px;
+        }
+        
+        .next-day-btn {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            color: #5A4FF3;
+            border: none;
+            padding: 20px;
+            border-radius: 24px;
+            font-size: 18px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 0 auto;
+            transition: transform 0.2s;
+        }
+        
+        .next-day-btn:hover {
+            transform: scale(1.02);
+        }
+        
+        .next-day-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            height: 144px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .stat-card-label {
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .stat-card-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        
+        .stat-card-footer {
+            font-size: 8px;
+            color: #94a3b8;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .color-positive { color: #10b981; }
+        .color-negative { color: #ef4444; }
+        .color-neutral { color: #0f172a; }
+        
+        /* Expense Breakdown */
+        .expense-card {
+            background: white;
+            padding: 32px;
+            border-radius: 32px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+        }
+        
+        .expense-title {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 24px;
+        }
+        
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .expense-item:last-child {
+            border-bottom: none;
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
+        }
+        
+        .expense-name {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .expense-amount {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        
+        .expense-total {
+            font-size: 16px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #0f172a;
+        }
+        
+        .expense-total-amount {
+            font-size: 16px;
+            font-weight: 800;
+            color: #ef4444;
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .notification-content {
+            padding: 16px 24px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        
+        .notification-success { background: #10b981; }
+        .notification-error { background: #ef4444; }
+        .notification-info { background: #5A4FF3; }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Game Over Modal */
+        .game-over-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        
+        .game-over-content {
+            max-width: 400px;
+            width: 100%;
+            background: white;
+            border-radius: 40px;
+            padding: 48px;
+            text-align: center;
+            box-shadow: 0 32px 64px rgba(0,0,0,0.25);
+        }
+        
+        .game-over-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+        
+        .restart-btn {
+            width: 100%;
+            background: #5A4FF3;
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 24px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            margin-top: 24px;
+            box-shadow: 0 20px 40px rgba(90, 79, 243, 0.3);
+            transition: transform 0.2s;
+        }
+        
+        .restart-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Navigation */
+        .game-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .nav-button {
+            padding: 20px 16px;
+            background: none;
+            border: none;
+            color: #cbd5e1;
+            font-size: 18px;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+        
+        .nav-button:hover {
+            color: #94a3b8;
+        }
+        
+        .nav-button.active {
+            color: #5A4FF3;
+        }
+        
+        .nav-button.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #5A4FF3;
+            border-radius: 0 0 4px 4px;
+        }
+        
+        /* New Game Modal */
+        .new-game-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(16px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        
+        .new-game-content {
+            max-width: 640px;
+            width: 100%;
+            background: white;
+            border-radius: 48px;
+            padding: 40px;
+            box-shadow: 0 48px 96px rgba(0,0,0,0.25);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .new-game-title {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .new-game-main-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+        
+        .new-game-subtitle {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 8px;
+            display: block;
+            padding-left: 8px;
+        }
+        
+        .venture-input {
+            width: 100%;
+            padding: 20px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .venture-input:focus {
+            border-color: #5A4FF3;
+        }
+        
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+        
+        .market-button {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            background: white;
+            color: #94a3b8;
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .market-button.active {
+            border-color: #5A4FF3;
+            background: #eef2ff;
+            color: #5A4FF3;
+        }
+        
+        .path-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+        
+        .path-button {
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 24px;
+            background: white;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .path-button.active {
+            border-color: #5A4FF3;
+            background: #eef2ff;
+        }
+        
+        .path-name {
+            font-size: 12px;
+            font-weight: 800;
+            color: #0f172a;
+            text-transform: uppercase;
+        }
+        
+        .path-desc {
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+        
+        .launch-btn {
+            width: 100%;
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 24px;
+            border-radius: 24px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 32px;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
+        }
+        
+        .launch-btn:hover {
+            transform: scale(1.02);
+        }
+        
+        .launch-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .launch-btn:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+        
+        /* Responsive */
+        @media (max-width: 640px) {
+            .market-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .day-number {
+                font-size: 48px;
+            }
+            
+            .nav-container {
+                padding: 0 16px;
+            }
+            
+            .nav-button {
+                padding: 20px 12px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container" id="gameContainer">
+        <!-- Game will be rendered here by JavaScript -->
+    </div>
+    <script>
+        // ============================
+        // GAME STATE & INITIALIZATION
+        // ============================
+        
+        const STORAGE_KEY = 'startup_tycoon_v4_stable';
+        
+        // Initial empty state
+        const INITIAL_STATE = {
+            day: 1,
+            cash: 50000,
+            users: 0,
+            team: [],
+            features: [],
+            candidates: [],
+            recruiters: [],
+            marketingChannels: [
+                { id: 'social', name: 'Social Media', cost: 1000, effectiveness: 1.2, fatigue: 1.0, unlocked: false },
+                { id: 'seo', name: 'SEO', cost: 5000, effectiveness: 2.5, fatigue: 1.0, unlocked: false },
+                { id: 'content', name: 'Content Marketing', cost: 3000, effectiveness: 1.8, fatigue: 1.0, unlocked: false },
+                { id: 'paid', name: 'Paid Ads', cost: 5000, effectiveness: 3.0, fatigue: 1.0, unlocked: false }
+            ],
+            techDebt: 0,
+            quarterlyGrowth: [],
+            burnRateHistory: [],
+            companyName: 'New Venture',
+            startupType: 'SaaS',
+            difficulty: 'Normal',
+            startingPath: 'Bootstrap',
+            equity: 100,
+            debtAmount: 0,
+            officeRented: false,
+            marketCondition: 'Steady',
+            perks: { growthBoost: 1.0 },
+            isGameOver: false
+        };
+        // Game features/templates
+        const STARTUP_TEMPLATES = {
+            'SaaS': [
+                { id: 'auth', name: 'User Authentication', description: 'Secure login system', cost: 30, capacity: 500, revenuePerUser: 0.05, growthMult: 1.1, userBonus: 50, prerequisites: [], status: 'Available' },
+                { id: 'billing', name: 'Billing System', description: 'Recurring payments', cost: 50, capacity: 2000, revenuePerUser: 0.10, growthMult: 1.2, userBonus: 100, prerequisites: ['auth'], status: 'Locked' },
+                { id: 'analytics', name: 'Analytics Dashboard', description: 'User insights', cost: 40, capacity: 1000, revenuePerUser: 0.07, growthMult: 1.15, userBonus: 75, prerequisites: ['auth'], status: 'Locked' },
+                { id: 'api', name: 'Public API', description: 'Developer platform', cost: 60, capacity: 5000, revenuePerUser: 0.15, growthMult: 1.3, userBonus: 200, prerequisites: ['auth', 'billing'], status: 'Locked' }
+            ],
+            'Gaming': [
+                { id: 'core', name: 'Core Gameplay', description: 'Basic game mechanics', cost: 40, capacity: 1000, revenuePerUser: 0.02, growthMult: 1.1, userBonus: 100, prerequisites: [], status: 'Available' },
+                { id: 'multi', name: 'Multiplayer', description: 'Online play', cost: 60, capacity: 3000, revenuePerUser: 0.05, growthMult: 1.3, userBonus: 200, prerequisites: ['core'], status: 'Locked' },
+                { id: 'store', name: 'In-Game Store', description: 'Microtransactions', cost: 50, capacity: 2000, revenuePerUser: 0.08, growthMult: 1.25, userBonus: 150, prerequisites: ['core'], status: 'Locked' }
+            ]
+        };
+        const NAMES = ["Alex", "Jordan", "Sam", "Casey", "Riley", "Taylor", "Morgan", "Quinn", "Skyler", "Peyton"];
+        const ROLES = ['Junior Dev', 'Senior Dev', 'Designer', 'Marketer'];
+        // ============================
+        // GAME STATE MANAGEMENT
+        // ============================
+        
+        let gameState = { ...INITIAL_STATE };
+        let activeTab = 'dashboard';
+        let isNewGameOpen = true;
+        let notification = null;
+        
+        // Load saved game
+        function loadGame() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                gameState = JSON.parse(saved);
+                isNewGameOpen = false;
+            }
+        }
+        
+        // Save game
+        function saveGame() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
+        }
+        
+        // Show notification
+        function showNotification(msg, type = 'info') {
+            notification = { msg, type };
+            setTimeout(() => {
+                notification = null;
+                render();
+            }, 3500);
+            render();
+        }
+        
+        // ============================
+        // GAME CALCULATIONS
+        // ============================
+        
+        function calculateDailySalaries() {
+            return gameState.team.reduce((sum, m) => sum + (m.salary / 30), 0);
+        }
+        
+        function calculateDailyRevenue() {
+            const liveFeatures = gameState.features.filter(f => f.status === 'Live');
+            const revenuePerUser = liveFeatures.reduce((sum, f) => sum + f.revenuePerUser, 0);
+            const hasScaleIssues = gameState.features.some(f => f.status === 'NeedsScale');
+            const penalty = hasScaleIssues ? 0.5 : 1.0;
+            return gameState.users * revenuePerUser * penalty;
+        }
+        
+        function calculateServerBurn() {
+            if (gameState.users === 0) return 0;
+            if (gameState.users <= 100) return 10;
+        
+function calculateDailySalaries() {
+            return gameState.team.reduce((sum, m) => sum + (m.salary / 30), 0);
+        }
+        
+        function calculateDailyRevenue() {
+            const liveFeatures = gameState.features.filter(f => f.status === 'Live');
+            const revenuePerUser = liveFeatures.reduce((sum, f) => sum + f.revenuePerUser, 0);
+            const hasScaleIssues = gameState.features.some(f => f.status === 'NeedsScale');
+            const penalty = hasScaleIssues ? 0.5 : 1.0;
+            return gameState.users * revenuePerUser * penalty;
+        }
+        
+        function calculateServerBurn() {
+            if (gameState.users === 0) return 0;
+            if (gameState.users <= 100) return 10;
+            if (gameState.users <= 1000) return 50;
+            if (gameState.users <= 10000) return 200;
+            return 500;
+        }
+        
+        function calculateSoftwareBurn() {
+            const monthlyRevenue = calculateDailyRevenue() * 30;
+            return monthlyRevenue >= 1000 ? 50 : 0;
+        }
+        
+        function calculateTotalBurn() {
+            const salaries = calculateDailySalaries();
+            const server = calculateServerBurn();
+            const software = calculateSoftwareBurn();
+            const office = gameState.officeRented ? 100 : 0;
+            const loan = gameState.debtAmount > 0 ? (gameState.debtAmount * 0.005) : 0;
+            return salaries + server + software + office + loan;
+        }
+        
+        function calculateRunway() {
+            const revenue = calculateDailyRevenue();
+            const burn = calculateTotalBurn();
+            const net = revenue - burn;
+            if (net >= 0) return 'Infinite';
+            return Math.floor(gameState.cash / Math.abs(net)) + ' Days';
+        }
+
+        // ============================
+        // GAME ACTIONS
+        // ============================
+        
+        function nextDay() {
+            if (gameState.isGameOver) return;
+            
+            const day = gameState.day + 1;
+            const revenue = calculateDailyRevenue();
+            const burn = calculateTotalBurn();
+            let cash = gameState.cash + revenue - burn;
+            
+            // Update users with growth
+            const growthRate = 0.005 + (Math.random() * 0.01);
+            let users = Math.floor(gameState.users * (1 + growthRate));
+            
+            // Update features
+            let features = [...gameState.features];
+            const activeFeatureIndex = features.findIndex(f => f.status === 'Developing');
+            if (activeFeatureIndex !== -1) {
+                const feature = features[activeFeatureIndex];
+                feature.remainingCost -= 1; // Simplified velocity
+                if (feature.remainingCost <= 0) {
+                    feature.status = 'Live';
+                    feature.remainingCost = 0;
+                    showNotification(`Feature launched: ${feature.name}`, 'success');
+                    users += feature.userBonus;
+                }
+                features[activeFeatureIndex] = feature;
+            }
+            
+            // Check for scaling issues
+            features = features.map(f => {
+                if (f.status === 'Live' && users > f.capacity) {
+                    return { ...f, status: 'NeedsScale' };
+                }
+                return f;
+            });
+            
+            // Market condition changes
+            let marketCondition = gameState.marketCondition;
+            if (day % 90 === 0) {
+                const rand = Math.random();
+                marketCondition = rand > 0.7 ? 'Bull' : rand < 0.3 ? 'Bear' : 'Steady';
+                showNotification(`Market is now ${marketCondition}`, 'info');
+            }
+            
+            // Team morale updates
+            let team = gameState.team.map(member => {
+                let moraleChange = -0.5;
+                if (revenue - burn > 100) moraleChange += 1.5;
+                if (cash < 5000) moraleChange -= 4;
+                
+                return {
+                    ...member,
+                    morale: Math.max(0, Math.min(100, member.morale + moraleChange)),
+                    loyalty: Math.max(0, Math.min(100, member.loyalty + (member.morale > 75 ? 0.3 : -0.8))),
+                    tenure: member.tenure + 1
+                };
+            });
+            
+            // Check for quitting
+            team = team.filter(member => {
+                const quitChance = (100 - member.loyalty) / 500;
+                if (Math.random() < quitChance) {
+                    showNotification(`${member.name} has quit`, 'error');
+                    return false;
+                }
+                return true;
+            });
+            
+            // Update game state
+            gameState = {
+                ...gameState,
+                day,
+                cash,
+                users,
+                features,
+                team,
+                marketCondition,
+                quarterlyGrowth: [...gameState.quarterlyGrowth, growthRate].slice(-30),
+                burnRateHistory: [...gameState.burnRateHistory, burn].slice(-30),
+                isGameOver: cash <= 0
+            };
+            
+            saveGame();
+            render();
+        }
+        
+        function hireCandidate(candidateId, offerAmount) {
+            const candidate = gameState.candidates.find(c => c.id === candidateId);
+            if (!candidate) return;
+            
+            const acceptChance = offerAmount >= candidate.salaryExpectation ? 0.8 : 0.3;
+            if (Math.random() < acceptChance) {
+                gameState.team.push({
+                    ...candidate,
+                    status: 'Hired',
+                    salary: offerAmount,
+                    morale: 80,
+                    loyalty: 80,
+                    tenure: 0
+                });
+                gameState.candidates = gameState.candidates.filter(c => c.id !== candidateId);
+                showNotification(`${candidate.name} joined the team!`, 'success');
+            } else {
+                gameState.candidates = gameState.candidates.filter(c => c.id !== candidateId);
+                showNotification(`${candidate.name} declined the offer`, 'error');
+            }
+            
+            saveGame();
+            render();
+        }
+        
+        function startNewGame(name, type, path) {
+            let cash = 50000;
+            let equity = 100;
+            let debt = 0;
+            let growthBoost = 1.0;
+            
+            if (path === 'Angel') { cash = 100000; equity = 85; }
+            else if (path === 'VC Pre-Seed') { cash = 250000; equity = 70; }
+            else if (path === 'Bank Loan') { cash = 100000; debt = 50000; }
+            else if (path === 'Accelerator') { cash = 50000; equity = 93; growthBoost = 1.1; }
+            
+            gameState = {
+                ...INITIAL_STATE,
+                companyName: name || "New Venture",
+                startupType: type,
+                startingPath: path,
+                cash,
+                equity,
+                debtAmount: debt,
+                perks: { growthBoost },
+                features: STARTUP_TEMPLATES[type].map(f => ({
+                    ...f,
+                    status: f.prerequisites.length === 0 ? 'Available' : 'Locked',
+                    remainingCost: f.cost
+                }))
+            };
+            
+            isNewGameOpen = false;
+            saveGame();
+            render();
+        }
+
+        
+        // ============================
+        // UI RENDERING
+        // ============================
+        
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+        
+        function render() {
+            const salaries = calculateDailySalaries();
+            const revenue = calculateDailyRevenue();
+            const serverBurn = calculateServerBurn();
+            const softwareBurn = calculateSoftwareBurn();
+            const officeBurn = gameState.officeRented ? 100 : 0;
+            const loanBurn = gameState.debtAmount > 0 ? (gameState.debtAmount * 0.005) : 0;
+            const totalBurn = salaries + serverBurn + softwareBurn + officeBurn + loanBurn;
+            const netFlow = revenue - totalBurn;
+            const runway = calculateRunway();
+            
+            let html = `
+                ${notification ? `
+                    <div class="notification">
+                        <div class="notification-content notification-${notification.type}">
+                            ${notification.msg}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                ${gameState.isGameOver ? `
+                    <div class="game-over-modal">
+                        <div class="game-over-content">
+                            <h2 class="game-over-title">Bankrupt</h2>
+                            <button class="restart-btn" onclick="isNewGameOpen = true; render()">
+                                Restart Empire
+                            </button>
+                        </div>
+                    </div>
+                ` : ''}
+                
+                ${isNewGameOpen ? renderNewGameModal() : ''}
+                
+                <header class="game-header">
+                    <div class="logo">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="stats-bar">
+                        <div class="stat-item">
+                            <div class="stat-label">Capital</div>
+                            <div class="stat-value">${formatCurrency(gameState.cash)}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Market</div>
+                            <div class="market-indicator market-${gameState.marketCondition.toLowerCase()}">
+                                ${gameState.marketCondition}
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Day</div>
+                            <div class="stat-value">${gameState.day}</div>
+                        </div>
+                    </div>
+                </header>
+                
+                <main class="main-content">
+                    ${activeTab === 'dashboard' ? renderDashboard() : ''}
+                    ${activeTab === 'team' ? renderTeam() : ''}
+                    ${activeTab === 'product' ? renderProduct() : ''}
+                    ${activeTab === 'growth' ? renderGrowth() : ''}
+                    ${activeTab === 'investors' ? renderInvestors() : ''}
+                    ${activeTab === 'settings' ? renderSettings() : ''}
+                </main>
+                
+                <nav class="game-nav">
+                    <div class="nav-container">
+                        <button class="nav-button ${activeTab === 'dashboard' ? 'active' : ''}" onclick="activeTab = 'dashboard'; render()">
+                            <i class="fas fa-chart-pie"></i>
+                        </button>
+                        <button class="nav-button ${activeTab === 'team' ? 'active' : ''}" onclick="activeTab = 'team'; render()">
+                            <i class="fas fa-user-group"></i>
+                        </button>
+                        <button class="nav-button ${activeTab === 'product' ? 'active' : ''}" onclick="activeTab = 'product'; render()">
+                            <i class="fas fa-terminal"></i>
+                        </button>
+                        <button class="nav-button ${activeTab === 'growth' ? 'active' : ''}" onclick="activeTab = 'growth'; render()">
+                            <i class="fas fa-bullhorn"></i>
+                        </button>
+                        <button class="nav-button ${activeTab === 'investors' ? 'active' : ''}" onclick="activeTab = 'investors'; render()">
+                            <i class="fas fa-briefcase"></i>
+                        </button>
+                        <button class="nav-button ${activeTab === 'settings' ? 'active' : ''}" onclick="activeTab = 'settings'; render()">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                    </div>
+                </nav>
+            `;
+            
+            document.getElementById('gameContainer').innerHTML = html;
+        }
+        
+        function renderDashboard() {
+            const salaries = calculateDailySalaries();
+            const revenue = calculateDailyRevenue();
+            const serverBurn = calculateServerBurn();
+            const softwareBurn = calculateSoftwareBurn();
+            const officeBurn = gameState.officeRented ? 100 : 0;
+            const loanBurn = gameState.debtAmount > 0 ? (gameState.debtAmount * 0.005) : 0;
+            const totalBurn = salaries + serverBurn + softwareBurn + officeBurn + loanBurn;
+            const netFlow = revenue - totalBurn;
+            
+            return `
+                <div class="day-panel">
+                    <div class="venture-type">${gameState.startupType} VENTURE</div>
+                    <div class="day-number">Day ${gameState.day}</div>
+                    <button class="next-day-btn" onclick="nextDay()">
+                        Process Day <i class="fas fa-play"></i>
+                    </button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-label">Burn Rate</div>
+                        <div class="stat-card-value color-negative">-${formatCurrency(totalBurn)}</div>
+                        <div class="stat-card-footer">Dynamic Total</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-label">Daily Revenue</div>
+                        <div class="stat-card-value color-positive">${formatCurrency(revenue)}</div>
+                        <div class="stat-card-footer">Recurring</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-label">Net Flow</div>
+                        <div class="stat-card-value ${netFlow >= 0 ? 'color-positive' : 'color-negative'}">
+                            ${netFlow >= 0 ? '+' : ''}${formatCurrency(netFlow)}
+                        </div>
+                        <div class="stat-card-footer">${netFlow >= 0 ? 'Profitable' : 'Deficit'}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-label">Runway</div>
+                        <div class="stat-card-value color-neutral">${calculateRunway()}</div>
+                        <div class="stat-card-footer">To Zero Cash</div>
+                    </div>
+                </div>
+                
+                <div class="expense-card">
+                    <h3 class="expense-title">Expense Breakdown (Daily)</h3>
+                    <div class="expense-list">
+                        <div class="expense-item">
+                            <span class="expense-name">Salaries (${gameState.team.length} employees)</span>
+                            <span class="expense-amount">-${formatCurrency(salaries)}</span>
+                        </div>
+                        <div class="expense-item">
+                            <span class="expense-name">Server Costs (${gameState.users.toLocaleString()} users)</span>
+                            <span class="expense-amount">-${formatCurrency(serverBurn)}</span>
+                        </div>
+                        <div class="expense-item">
+                            <span class="expense-name">Software & Tools (Pro Tier)</span>
+                            <span class="expense-amount">-${formatCurrency(softwareBurn)}</span>
+                        </div>
+                        <div class="expense-item">
+                            <span class="expense-name">Office Rent ${gameState.officeRented ? '(Hybrid)' : '(Remote)'}</span>
+                            <span class="expense-amount">-${formatCurrency(officeBurn)}</span>
+                        </div>
+                        ${loanBurn > 0 ? `
+                            <div class="expense-item">
+                                <span class="expense-name">Loan Repayment & Interest</span>
+                                <span class="expense-amount">-${formatCurrency(loanBurn)}</span>
+                            </div>
+                        ` : ''}
+                        <div class="expense-item">
+                            <span class="expense-total">Total Daily Burn</span>
+                            <span class="expense-total-amount">-${formatCurrency(totalBurn)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderTeam() {
+            return `
+                <h2 style="font-size: 32px; font-weight: 800; color: #0f172a; margin-bottom: 24px;">Team & Hiring</h2>
+                <div style="background: #0f172a; color: white; padding: 24px; border-radius: 24px; margin-bottom: 24px;">
+                    <p style="font-size: 12px; font-weight: 800; margin-bottom: 8px;">Coming Soon</p>
+                    <p style="font-size: 14px; opacity: 0.7;">Team management features are being developed</p>
+                </div>
+                <p style="color: #64748b; font-size: 14px; margin-top: 32px;">
+                    This is a simplified version for deployment. The full React version has complete team management.
+                </p>
+            `;
+        }
+        
+        function renderProduct() {
+            return `
+                <h2 style="font-size: 32px; font-weight: 800; color: #0f172a; margin-bottom: 24px;">Product Strategy</h2>
+                <div style="background: #0f172a; color: white; padding: 24px; border-radius: 24px; margin-bottom: 24px;">
+                    <p style="font-size: 12px; font-weight: 800; margin-bottom: 8px;">Coming Soon</p>
+                    <p style="font-size: 14px; opacity: 0.7;">Product development features are being developed</p>
+                </div>
+                <p style="color: #64748b; font-size: 14px; margin-top: 32px;">
+                    This is a simplified version for deployment. The full React version has complete product development.
+                </p>
+            `;
+        }
+        
+        function renderGrowth() {
+            return `
+                <h2 style="font-size: 32px; font-weight: 800; color: #0f172a; margin-bottom: 24px;">Growth</h2>
+                <div style="background: #0f172a; color: white; padding: 24px; border-radius: 24px; margin-bottom: 24px;">
+                    <p style="font-size: 12px; font-weight: 800; margin-bottom: 8px;">Coming Soon</p>
+                    <p style="font-size: 14px; opacity: 0.7;">Marketing and growth features are being developed</p>
+                </div>
+                <p style="color: #64748b; font-size: 14px; margin-top: 32px;">
+                    This is a simplified version for deployment. The full React version has complete growth systems.
+                </p>
+            `;
+        }
+        
+        function renderInvestors() {
+            return `
+                <h2 style="font-size: 32px; font-weight: 800; color: #0f172a; margin-bottom: 24px;">Capital Raising</h2>
+                <div style="background: #0f172a; color: white; padding: 24px; border-radius: 24px; margin-bottom: 24px;">
+                    <p style="font-size: 12px; font-weight: 800; margin-bottom: 8px;">Coming Soon</p>
+                    <p style="font-size: 14px; opacity: 0.7;">Investor pitching features are being developed</p>
+                </div>
+                <p style="color: #64748b; font-size: 14px; margin-top: 32px;">
+                    This is a simplified version for deployment. The full React version has complete investor systems.
+                </p>
+            `;
+        }
+        
+        function renderSettings() {
+            return `
+                <h2 style="font-size: 32px; font-weight: 800; color: #0f172a; margin-bottom: 24px;">Settings</h2>
+                <div style="display: grid; gap: 16px;">
+                    <button onclick="saveGame(); showNotification('Game Saved', 'success')" style="background: white; border: 1px solid #e2e8f0; padding: 24px; border-radius: 24px; text-align: left; font-weight: 700; cursor: pointer;">
+                        Save Progress
+                    </button>
+                    <button onclick="isNewGameOpen = true; render()" style="background: white; border: 1px solid #fee2e2; padding: 24px; border-radius: 24px; text-align: left; font-weight: 700; color: #ef4444; cursor: pointer;">
+                        Found New Company
+                    </button>
+                </div>
+            `;
+        }
+        
+        function renderNewGameModal() {
+            const marketTypes = ['SaaS', 'Gaming', 'FinTech', 'E-commerce', 'AI/ML'];
+            const paths = [
+                { id: 'Bootstrap', name: 'Bootstrap', desc: '$50k, 100% Equity, Slow Burn' },
+                { id: 'Angel', name: 'Angel', desc: '$100k, 85% Equity, High Morale' },
+                { id: 'VC Pre-Seed', name: 'VC Pre-Seed', desc: '$250k, 70% Equity, High Stakes' },
+                { id: 'Bank Loan', name: 'Bank Loan', desc: '$100k, 100% Equity, Daily Interest' },
+                { id: 'Accelerator', name: 'Accelerator', desc: '$50k, 93% Equity, +10% Growth' }
+            ];
+            
+            let selectedType = 'SaaS';
+            let selectedPath = 'Bootstrap';
+            let ventureName = '';
+            
+            return `
+                <div class="new-game-modal">
+                    <div class="new-game-content">
+                        <div class="new-game-title">
+                            <h2 class="new-game-main-title">Found Your Empire</h2>
+                            <p class="new-game-subtitle">Select your starting conditions</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Venture Name</label>
+                            <input type="text" class="venture-input" placeholder="HyperSpace, Loom, etc." 
+                                   oninput="ventureName = this.value; render()"
+                                   value="${ventureName}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Market Segment</label>
+                            <div class="market-grid">
+                                ${marketTypes.map(type => `
+                                    <button class="market-button ${selectedType === type ? 'active' : ''}"
+                                            onclick="selectedType = '${type}'; render()">
+                                        ${type}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Starting Path</label>
+                            <div class="path-grid">
+                                ${paths.map(path => `
+                                    <button class="path-button ${selectedPath === path.id ? 'active' : ''}"
+                                            onclick="selectedPath = '${path.id}'; render()">
+                                        <div>
+                                            <div class="path-name">${path.name}</div>
+                                            <div class="path-desc">${path.desc}</div>
+                                        </div>
+                                        ${selectedPath === path.id ? '<i class="fas fa-circle-check" style="color: #5A4FF3;"></i>' : ''}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <button class="launch-btn" 
+                                onclick="startNewGame(ventureName, selectedType, selectedPath)"
+                                ${!ventureName ? 'disabled' : ''}>
+                            Launch Venture
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+       // ============================
+        // INITIALIZATION
+        // ============================
+        
+        function init() {
+            loadGame();
+            render();
+        }
+        
+        // Start the game
+        init();
+    </script>
+</body>
+</html>
