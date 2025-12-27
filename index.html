@@ -1147,6 +1147,17 @@
   </div>
 
   <script>
+    // Error handling
+window.addEventListener('error', function(e) {
+  console.error('Game error:', e.error);
+  document.getElementById('gameContainer').innerHTML = `
+    <div style="padding: 40px; text-align: center;">
+      <h2>Game Error</h2>
+      <p>${e.error?.message || 'Unknown error'}</p>
+      <button onclick="location.reload()">Reload</button>
+    </div>
+  `;
+});
     // =====================
     // GAME STATE & STORAGE
     // =====================
