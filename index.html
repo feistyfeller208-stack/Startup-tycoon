@@ -1268,14 +1268,6 @@ function calculateTotalBurn() {
   return salaries + server + software + office + loan;
 }
 
-function calculateRunway() {
-  const revenue = calculateDailyRevenue();
-  const burn = calculateTotalBurn();
-  const net = revenue - burn;
-  if (net >= 0) return 'Infinite';
-  return Math.floor(gameState.cash / Math.abs(net)) + ' Days';
-}
-
 function calculateValuation() {
   const revenue = calculateDailyRevenue();
   const growthRate = gameState.quarterlyGrowth.length > 0 
