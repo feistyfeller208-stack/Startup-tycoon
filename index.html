@@ -1488,7 +1488,7 @@ function initializeFeatures() {
       { id: 'invest', name: 'Investment Tools', description: 'Stock trading features', cost: 240, capacity: 2000, revenuePerUser: 0.15, userBonus: 120, prerequisites: ['wallet'] }
     ]
   };
-  ³
+  
   gameState.features = (features[gameState.startupType] || features['SaaS']).map(f => ({
     ...f,
     status: f.prerequisites.length === 0 ? 'Available' : 'Locked',
