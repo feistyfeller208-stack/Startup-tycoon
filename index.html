@@ -1218,7 +1218,14 @@ window.addEventListener('error', function(e) {
 // =====================
 // GAME CALCULATIONS
 // =====================
-
+    
+function calculateRunway() {
+  const revenue = calculateDailyRevenue();
+  const burn = calculateTotalBurn();
+  const net = revenue - burn;
+  if (net >= 0) return 'Infinite';
+  return Math.floor(gameState.cash / Math.abs(net)) + ' Days';
+    }
 function calculateDailySalaries() {
   return gameState.team.reduce((sum, member) => sum + (member.salary / 30), 0);
 }
