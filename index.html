@@ -1870,7 +1870,7 @@ function renderDashboard() {
     <div class="card">
       <h2>Quick Actions</h2>
       <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 16px;">
-        <button onclick="hireEmployee('Junior Dev', 4000)">Hire Junior Dev ($2k)</button>
+        <button onclick="startHiring('Junior Dev', 4000)">Hire Junior Dev ($2k)</button>
         <button class="secondary" onclick="toggleOffice()">
           ${gameState.officeRented ? 'Close Office' : 'Rent Office'}
         </button>
@@ -1891,13 +1891,13 @@ function renderTeam() {
         <button onclick="startHiring('Junior Dev', 4000)">
   Hire Junior Dev<br><small>${formatCurrency(1333)} fee, 3 days</small>
 </button>
-        <button onclick="hireEmployee('Senior Dev', 8000)">
+        <button onclick="startHiring('Senior Dev', 8000)">
           Hire Senior Dev<br><small>$4k signing + $267/day</small>
         </button>
-        <button onclick="hireEmployee('Designer', 6000)">
+        <button onclick="startHiring('Designer', 6000)">
           Hire Designer<br><small>$3k signing + $200/day</small>
         </button>
-        <button onclick="hireEmployee('Marketer', 5000)">
+        <button onclick="startHiring('Marketer', 5000)">
           Hire Marketer<br><small>$2.5k signing + $167/day</small>
         </button>
       </div>
