@@ -1749,6 +1749,8 @@ function renderDashboard() {
   const software = calculateSoftwareBurn();
   const office = calculateOfficeBurn();
   const loan = calculateLoanBurn();
+
+  const runway = calculaterunway();
   
   return `
     <div class="day-panel">
