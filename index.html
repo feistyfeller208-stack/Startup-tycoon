@@ -1288,6 +1288,8 @@ function calculateValuation() {
 
 function nextDay() {
   if (gameState.isGameOver) return;
+ 
+  processHiring();
   
   const day = gameState.day + 1;
   const revenue = calculateDailyRevenue();
@@ -1376,31 +1378,78 @@ function nextDay() {
   render();
 }
 
-function hireEmployee(role, salary) {
-  if (gameState.cash < salary / 2) {
-    showNotification('Not enough cash for signing bonus!', 'error');
+  function startHiring(role, salary) {
+  if (gameState.cash < salary / 3) {
+    showNotification(`Need ${formatCurrency(salary / 3)} for recruiting fee`, 'error');
     return;
+  }
+  
+  // Check if already hiring this role
+  if (gameState.hiringQueue && gameState.hiringQueue.some(h => h.role === role)) {
+    showNotification(`Already hiring ${role}`, 'info');
+    return;
+  }
+  
+  // Initialize hiring queue if needed
+  if (!gameState.hiringQueue) {
+    gameState.hiringQueue = [];
   }
   
   const names = ['Alex', 'Jordan', 'Sam', 'Casey', 'Riley', 'Taylor', 'Morgan'];
   const name = names[Math.floor(Math.random() * names.length)];
   
-  gameState.team.push({
+  gameState.hiringQueue.push({
     id: Date.now().toString(),
     name,
     role,
     salary,
-    morale: 80,
-    loyalty: 80,
-    tenure: 0
+    daysRemaining: 3, // 3-day hiring process
+    status: 'interviewing'
   });
   
-  gameState.cash -= salary / 2; // Signing bonus
-  showNotification(`Hired ${name} as ${role}`, 'success');
+  gameState.cash -= salary / 3; // Recruiting fee
+  showNotification(`Started hiring ${role} (3 days)`, 'info');
   saveGame();
   render();
 }
 
+function processHiring() {
+  if (!gameState.hiringQueue || gameState.hiringQueue.length === 0) return;
+  
+  let newHires = [];
+  
+  gameState.hiringQueue = gameState.hiringQueue.map(hiring => {
+    hiring.daysRemaining -= 1;
+    
+    if (hiring.daysRemaining <= 0) {
+      // Hire complete
+      newHires.push({
+        id: hiring.id,
+        name: hiring.name,
+        role: hiring.role,
+        salary: hiring.salary,
+        morale: 80,
+        loyalty: 80,
+        tenure: 0,
+        skill: hiring.role.includes('Senior') ? 70 : 50
+      });
+      return null;
+    }
+    
+    return hiring;
+  }).filter(Boolean); // Remove null entries
+  
+  // Add new hires to team
+  if (newHires.length > 0) {
+    gameState.team.push(...newHires);
+    newHires.forEach(h => {
+      showNotification(`${h.name} joined as ${h.role}`, 'success');
+    });
+  }
+  
+  saveGame();
+    }
+    
 function fireEmployee(id) {
   gameState.team = gameState.team.filter(m => m.id !== id);
   showNotification('Employee terminated', 'info');
@@ -1839,9 +1888,9 @@ function renderTeam() {
       <p>Hire employees to build and grow your company. Each employee adds to your burn rate but increases capabilities.</p>
       
       <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 20px 0;">
-        <button onclick="hireEmployee('Junior Dev', 4000)">
-          Hire Junior Dev<br><small>$2k signing + $133/day</small>
-        </button>
+        <button onclick="startHiring('Junior Dev', 4000)">
+  Hire Junior Dev<br><small>${formatCurrency(1333)} fee, 3 days</small>
+</button>
         <button onclick="hireEmployee('Senior Dev', 8000)">
           Hire Senior Dev<br><small>$4k signing + $267/day</small>
         </button>
@@ -1852,7 +1901,24 @@ function renderTeam() {
           Hire Marketer<br><small>$2.5k signing + $167/day</small>
         </button>
       </div>
-      
+
+      ${gameState.hiringQueue && gameState.hiringQueue.length > 0 ? `
+  <div style="margin-top: 24px;">
+    <h3 style="font-size: 14px; color: #64748b; margin-bottom: 16px;">Hiring Pipeline</h3>
+    ${gameState.hiringQueue.map(h => `
+      <div style="background: #f1f5f9; border-radius: 12px; padding: 12px; margin-bottom: 8px;">
+        <div style="display: flex; justify-content: space-between;">
+          <span style="font-weight: 600;">${h.role}</span>
+          <span style="color: #64748b; font-size: 12px;">${h.daysRemaining} day${h.daysRemaining !== 1 ? 's' : ''} left</span>
+        </div>
+        <div style="font-size: 12px; color: #64748b; margin-top: 4px;">
+          ${h.name} • ${formatCurrency(h.salary)}/month
+        </div>
+      </div>
+    `).join('')}
+  </div>
+` : ''}
+
       <div style="margin-top: 24px;">
         <h3 style="font-size: 14px; color: #64748b; margin-bottom: 16px;">Your Team (${gameState.team.length}/10)</h3>
         ${gameState.team.length === 0 ? `
