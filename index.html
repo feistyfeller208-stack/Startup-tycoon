@@ -1197,6 +1197,15 @@ window.addEventListener('error', function(e) {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
+
+      if (parsed.team) {
+‎      parsed.team = parsed.team.map(emp => ({
+‎        ...emp,
+‎        skill: emp.skill || (emp.role.includes('Senior') ? 70 : 50),
+‎        experience: emp.experience || 0
+‎      }));
+‎    }
+     
         gameState = parsed;
         isNewGameOpen = false;
         initializeFeatures();
@@ -1366,7 +1375,16 @@ gameState.features = gameState.features.map(feature => {
       morale: Math.max(0, Math.min(100, member.morale + moraleChange)),
       loyalty: Math.max(0, Math.min(100, member.loyalty + (member.morale > 75 ? 0.3 : -0.8))),
       tenure: member.tenure + 1
-    };
+
+    ‎if (day % 30 === 0) {
+‎  emp.skill = Math.min(100, emp.skill + 1); 
+‎  emp.experience += 30;
+‎  
+‎  if (emp.experience >= 365 && emp.skill >= 70) {
+‎  }
+‎}
+‎};
+                                      
   }).filter(member => {
     // Chance to quit based on loyalty
     const quitChance = (100 - member.loyalty) / 500;
@@ -1376,6 +1394,33 @@ gameState.features = gameState.features.map(feature => {
     }
     return true;
   });
+  
+gameState.team = gameState.team.map(emp => {
+  // Junior → Senior promotion
+  if (emp.role === 'Junior Dev' && emp.experience >= 365 && emp.skill >= 70) {
+    if (confirm(`Promote ${emp.name} to Senior Dev? (+40% salary)`)) {
+      showNotification(`🎉 ${emp.name} promoted to Senior Dev!`, 'success');
+      return {
+        ...emp,
+        role: 'Senior Dev',
+        salary: Math.floor(emp.skill * 140) 
+      };
+    }
+  }
+  
+  if (emp.role === 'Senior Dev' && emp.experience >= 730 && emp.skill >= 85) {
+    if (confirm(`Promote ${emp.name} to Tech Lead? (+60% salary)`)) {
+      showNotification(`🚀 ${emp.name} promoted to Tech Lead!`, 'success');
+      return {
+        ...emp,
+        role: 'Tech Lead',
+        salary: Math.floor(emp.skill * 180)
+      };
+    }
+  }
+  
+  return emp;
+});
   
   // Update state
   gameState = {
@@ -1446,6 +1491,7 @@ function processHiring() {
         loyalty: 80,
         tenure: 0,
         skill: hiring.role.includes('Senior') ? 70 : 50
+        experience: 0
       });
       return null;
     }
@@ -1470,6 +1516,24 @@ function fireEmployee(id) {
   saveGame();
   render();
 }
+
+    function checkEmployeeRetention() {
+  const monthlyQuitChance = 0.05; // 5% base monthly
+  
+  gameState.team = gameState.team.map(emp => {
+    const salaryRatio = emp.salary / marketRate(emp.role);
+    const quitRisk = monthlyQuitChance 
+                   * (salaryRatio < 0.8 ? 2.0 : 1.0)  // Underpaid
+                   * (emp.morale < 50 ? 1.5 : 1.0)    // Low morale
+                   * (gameState.cash < 10000 ? 1.3 : 1.0); // Company struggling
+    
+    if (Math.random() < quitRisk) {
+      showNotification(`${emp.name} quit (${emp.role})`, 'error');
+      return null;
+    }
+    return emp;
+  }).filter(Boolean);
+    }
 
 function initializeFeatures() {
   if (gameState.features.length > 0) return;
@@ -1647,7 +1711,17 @@ function formatCurrency(amount) {
 function formatNumber(num) {
   return new Intl.NumberFormat('en-US').format(num);
   }
-  
+
+    function marketRate(role) {
+  const rates = {
+    'Junior Dev': 4000,
+    'Senior Dev': 8000,
+    'Designer': 6000,
+    'Marketer': 5000
+  };
+  return rates[role] || 5000;
+    }
+    
 // =====================
 // UI RENDERING
 // =====================
