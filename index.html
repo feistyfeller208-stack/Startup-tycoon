@@ -1365,26 +1365,30 @@ gameState.features = gameState.features.map(feature => {
   }
   
   // Team updates
-  gameState.team = gameState.team.map(member => {
-    let moraleChange = -0.5;
-    if (revenue - burn > 100) moraleChange += 1.5;
-    if (cash < 5000) moraleChange -= 4;
-    
-    return {
-      ...member,
-      morale: Math.max(0, Math.min(100, member.morale + moraleChange)),
-      loyalty: Math.max(0, Math.min(100, member.loyalty + (member.morale > 75 ? 0.3 : -0.8))),
-      tenure: member.tenure + 1
-    };
-
-    ‎if (day % 30 === 0) {
-‎  emp.skill = Math.min(100, emp.skill + 1); 
-‎  emp.experience += 30;
-‎  
-‎  if (emp.experience >= 365 && emp.skill >= 70) {
-‎  }
-‎}
-                                      
+gameState.team = gameState.team.map(member => {
+  let moraleChange = -0.5;
+  if (revenue - burn > 100) moraleChange += 1.5;
+  if (cash < 5000) moraleChange -= 4;
+  
+  // Calculate new skill/experience
+  let newSkill = member.skill || 50;
+  let newExperience = member.experience || 0;
+  
+  if (day % 30 === 0) {
+    newSkill = Math.min(100, newSkill + 1);
+    newExperience += 30;
+  }
+  
+  return {
+    ...member,
+    morale: Math.max(0, Math.min(100, member.morale + moraleChange)),
+    loyalty: Math.max(0, Math.min(100, member.loyalty + (member.morale > 75 ? 0.3 : -0.8))),
+    tenure: member.tenure + 1,
+    skill: newSkill,
+    experience: newExperience
+  };
+});   
+  
   }).filter(member => {
     // Chance to quit based on loyalty
     const quitChance = (100 - member.loyalty) / 500;
