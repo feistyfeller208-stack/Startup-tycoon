@@ -1969,6 +1969,95 @@ function render() {
   `;
   }
 
+    function renderProduct() {
+  initializeFeatures();
+  
+  return `
+    <div class="card">
+      <h2>Product Development</h2>
+      <p>Build features to increase revenue per user. Each feature takes time to develop and has capacity limits.</p>
+      
+      <div style="margin-top: 24px;">
+        <h3 style="font-size: 14px; color: #64748b; margin-bottom: 16px;">Features</h3>
+        ${gameState.features.length === 0 ? `
+          <p style="color: #94a3b8; text-align: center; padding: 40px;">No features available. Select a market segment first.</p>
+        ` : gameState.features.map(feature => {
+          const statusClass = feature.status === 'Developing' ? 'developing' :
+                             feature.status === 'Live' ? 'live' :
+                             feature.status === 'NeedsScale' ? 'needs-scale' : '';
+          
+          const statusText = feature.status === 'Available' ? 'Available' :
+                            feature.status === 'Developing' ? 'Developing' :
+                            feature.status === 'Live' ? 'Live' :
+                            feature.status === 'NeedsScale' ? 'Needs Scale' : 'Locked';
+          
+          const statusColor = feature.status === 'Available' ? 'status-available' :
+                             feature.status === 'Developing' ? 'status-developing' :
+                             feature.status === 'Live' ? 'status-live' :
+                             feature.status === 'NeedsScale' ? 'status-needs-scale' : 'status-available';
+          
+          const progressPercent = feature.status === 'Developing' 
+            ? Math.max(0, Math.min(100, ((feature.cost - feature.remainingCost) / feature.cost) * 100))
+            : 0;
+          
+          return `
+            <div class="feature-card ${statusClass}">
+              <div class="feature-header">
+                <div>
+                  <div class="feature-name">${feature.name}</div>
+                  <div style="font-size: 12px; color: #64748b; margin-top: 4px;">${feature.description}</div>
+                </div>
+                <div class="feature-status ${statusColor}">${statusText}</div>
+              </div>
+              
+              <div style="font-size: 12px; color: #64748b; margin-top: 12px;">
+                <div style="display: flex; justify-content: space-between;">
+                  <span>Revenue: $${feature.revenuePerUser.toFixed(2)}/user</span>
+                  <span>Capacity: ${formatNumber(feature.capacity)} users</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                  <span>Bonus: +${feature.userBonus} users</span>
+                  <span>Cost: ${feature.cost} days</span>
+                </div>
+              </div>
+              
+              ${feature.status === 'Developing' ? `
+                <div class="feature-progress">
+                  <div class="feature-progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+                <div style="text-align: center; font-size: 12px; color: #64748b; margin-top: 8px;">
+                  ${Math.round(progressPercent)}% complete
+                </div>
+              ` : ''}
+              
+              ${feature.status === 'Available' ? `
+                <button onclick="startDeveloping('${feature.id}')" style="margin-top: 16px; width: 100%;">
+                  Start Development
+                </button>
+              ` : ''}
+              
+              ${feature.status === 'NeedsScale' ? `
+                <button class="success" onclick="startDeveloping('${feature.id}')" style="margin-top: 16px; width: 100%;">
+                  Scale Systems (${Math.ceil(feature.cost * 0.6)} days)
+                </button>
+              ` : ''}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>System Status</h2>
+      <p style="color: #64748b; font-size: 14px;">
+        Users: ${formatNumber(gameState.users)}<br>
+        Live Features: ${gameState.features.filter(f => f.status === 'Live').length}<br>
+        Features Needing Scale: ${gameState.features.filter(f => f.status === 'NeedsScale').length}
+      </p>
+    </div>
+  `;
+    }
+
     // =====================
     // INITIALIZE GAME
     // =====================
