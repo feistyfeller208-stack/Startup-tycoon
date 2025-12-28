@@ -1053,47 +1053,9 @@ function nextDay() {
   gameState.team = gameState.team.map(member => {
     let moraleChange = -0.5;
     if (revenue - burn > 100) moraleChange += 1.5;
-    if (cash < 5000) moraleChange -= 4;
-
-    if (day % 30 === 0) {
-  const totalMonthlySalaries = gameState.team.reduce((sum, member) => sum + member.salary, 0);
-  
-  if (gameState.cash >= totalMonthlySalaries) {
-    gameState.cash -= totalMonthlySalaries;
-    showNotification(`Paid $${formatNumber(totalMonthlySalaries)} in salaries`, 'success');
-    
-    gameState.team = gameState.team.map(member => ({
-      ...member,
-      morale: Math.min(100, member.morale + 5)
-    }));
-    
-    gameState.lastPayrollDay = day;
-    gameState.missedPayrolls = 0;
-  } else {
-    gameState.missedPayrolls = (gameState.missedPayrolls || 0) + 1;
-    
-    showNotification(`CRISIS: Missed payroll! ${gameState.missedPayrolls}x`, 'error');
-    
-    gameState.team = gameState.team.map(member => {
-      const quitChance = 0.3 * gameState.missedPayrolls;
-      if (Math.random() < quitChance) {
-        showNotification(`${member.name} quit (no pay)`, 'error');
-        return null;
-      }
-      
-      return {
-        ...member,
-        morale: Math.max(0, member.morale - 30),
-        loyalty: Math.max(0, member.loyalty - 20)
-      };
-    }).filter(Boolean);
-    
-    if (gameState.team.length === 0) {
-      showNotification('TEAM MUTINY: All employees left!', 'error');
-    }
+    if (cash < 5000) moraleChange -= 4;   
   }
-    }
-    
+  
     // Calculate new skill/experience
     let newSkill = member.skill || 50;
     let newExperience = member.experience || 0;
