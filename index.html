@@ -2059,7 +2059,10 @@ function render() {
     }
 
     function renderGrowth() {
-  initializeMarketing();
+  // Ensure marketing channels are initialized
+  if (gameState.marketingChannels.length === 0) {
+    initializeMarketing();
+  }
   
   return `
     <div class="card">
@@ -2068,7 +2071,7 @@ function render() {
       
       <div style="margin-top: 24px;">
         <h3 style="font-size: 14px; color: #64748b; margin-bottom: 16px;">Marketing Channels</h3>
-        ${gameState.marketingChannels.map(channel => `
+        ${gameState.marketingChannels && gameState.marketingChannels.length > 0 ? gameState.marketingChannels.map(channel => `
           <div class="channel-card">
             <div class="channel-header">
               <div class="channel-name">${channel.name}</div>
@@ -2076,13 +2079,13 @@ function render() {
             </div>
             
             <div class="channel-stats">
-              <span>Effectiveness: ${channel.effectiveness.toFixed(1)}x</span>
-              <span>Fatigue: ${Math.round((1 - channel.fatigue) * 100)}%</span>
+              <span>Effectiveness: ${channel.effectiveness ? channel.effectiveness.toFixed(1) : '1.0'}x</span>
+              <span>Fatigue: ${Math.round(((channel.fatigue || 1) * 100))}%</span>
             </div>
             
             ${channel.unlocked ? `
               <button onclick="runMarketing('${channel.id}')" style="width: 100%;">
-                Run Campaign (+${Math.floor(channel.cost * channel.effectiveness * channel.fatigue)} users)
+                Run Campaign (+${Math.floor((channel.cost || 0) * (channel.effectiveness || 1) * (channel.fatigue || 1))} users)
               </button>
             ` : `
               <button class="secondary" onclick="unlockChannel('${channel.id}')" style="width: 100%;" ${gameState.cash < 5000 ? 'disabled' : ''}>
@@ -2090,7 +2093,7 @@ function render() {
               </button>
             `}
           </div>
-        `).join('')}
+        `).join('') : '<p style="color: #94a3b8; text-align: center; padding: 40px;">No marketing channels available.</p>'}
       </div>
     </div>
     
@@ -2098,10 +2101,10 @@ function render() {
       <h2>User Analytics</h2>
       <p style="color: #64748b; font-size: 14px;">
         Current Users: ${formatNumber(gameState.users)}<br>
-        Daily Growth: ${gameState.quarterlyGrowth.length > 0 
+        Daily Growth: ${gameState.quarterlyGrowth && gameState.quarterlyGrowth.length > 0 
           ? (gameState.quarterlyGrowth[gameState.quarterlyGrowth.length - 1] * 100).toFixed(1) + '%'
           : '0%'}<br>
-        Revenue Per User: $${(calculateDailyRevenue() / gameState.users || 0).toFixed(2)}
+        Revenue Per User: $${gameState.users > 0 ? (calculateDailyRevenue() / gameState.users).toFixed(2) : '0.00'}
       </p>
     </div>
   `;
