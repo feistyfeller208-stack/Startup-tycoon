@@ -1375,6 +1375,7 @@ gameState.features = gameState.features.map(feature => {
       morale: Math.max(0, Math.min(100, member.morale + moraleChange)),
       loyalty: Math.max(0, Math.min(100, member.loyalty + (member.morale > 75 ? 0.3 : -0.8))),
       tenure: member.tenure + 1
+    };
 
     ‎if (day % 30 === 0) {
 ‎  emp.skill = Math.min(100, emp.skill + 1); 
@@ -1383,7 +1384,6 @@ gameState.features = gameState.features.map(feature => {
 ‎  if (emp.experience >= 365 && emp.skill >= 70) {
 ‎  }
 ‎}
-‎};
                                       
   }).filter(member => {
     // Chance to quit based on loyalty
