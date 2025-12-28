@@ -2058,6 +2058,55 @@ function render() {
   `;
     }
 
+    function renderGrowth() {
+  initializeMarketing();
+  
+  return `
+    <div class="card">
+      <h2>Growth & Marketing</h2>
+      <p>Run marketing campaigns to acquire users. Channels become less effective over time (fatigue).</p>
+      
+      <div style="margin-top: 24px;">
+        <h3 style="font-size: 14px; color: #64748b; margin-bottom: 16px;">Marketing Channels</h3>
+        ${gameState.marketingChannels.map(channel => `
+          <div class="channel-card">
+            <div class="channel-header">
+              <div class="channel-name">${channel.name}</div>
+              <div class="channel-cost">${formatCurrency(channel.cost)}</div>
+            </div>
+            
+            <div class="channel-stats">
+              <span>Effectiveness: ${channel.effectiveness.toFixed(1)}x</span>
+              <span>Fatigue: ${Math.round((1 - channel.fatigue) * 100)}%</span>
+            </div>
+            
+            ${channel.unlocked ? `
+              <button onclick="runMarketing('${channel.id}')" style="width: 100%;">
+                Run Campaign (+${Math.floor(channel.cost * channel.effectiveness * channel.fatigue)} users)
+              </button>
+            ` : `
+              <button class="secondary" onclick="unlockChannel('${channel.id}')" style="width: 100%;" ${gameState.cash < 5000 ? 'disabled' : ''}>
+                Unlock Channel (${formatCurrency(5000)})
+              </button>
+            `}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>User Analytics</h2>
+      <p style="color: #64748b; font-size: 14px;">
+        Current Users: ${formatNumber(gameState.users)}<br>
+        Daily Growth: ${gameState.quarterlyGrowth.length > 0 
+          ? (gameState.quarterlyGrowth[gameState.quarterlyGrowth.length - 1] * 100).toFixed(1) + '%'
+          : '0%'}<br>
+        Revenue Per User: $${(calculateDailyRevenue() / gameState.users || 0).toFixed(2)}
+      </p>
+    </div>
+  `;
+    }
+
     // =====================
     // INITIALIZE GAME
     // =====================
