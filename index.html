@@ -1893,6 +1893,82 @@ function render() {
       `;
     }
 
+    function renderTeam() {
+  return `
+    <div class="card">
+      <h2>Team Management</h2>
+      <p>Hire employees to build and grow your company. Each employee adds to your burn rate but increases capabilities.</p>
+      
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 20px 0;">
+        <button onclick="startHiring('Junior Dev', 4000)">
+          Hire Junior Dev<br><small>${formatCurrency(1333)} fee, 3 days</small>
+        </button>
+        <button onclick="startHiring('Senior Dev', 8000)">
+          Hire Senior Dev<br><small>$4k signing + $267/day</small>
+        </button>
+        <button onclick="startHiring('Designer', 6000)">
+          Hire Designer<br><small>$3k signing + $200/day</small>
+        </button>
+        <button onclick="startHiring('Marketer', 5000)">
+          Hire Marketer<br><small>$2.5k signing + $167/day</small>
+        </button>
+      </div>
+
+      ${gameState.hiringQueue && gameState.hiringQueue.length > 0 ? `
+        <div style="margin-top: 24px;">
+          <h3 style="font-size: 14px; color: #64748b; margin-bottom: 16px;">Hiring Pipeline</h3>
+          ${gameState.hiringQueue.map(h => `
+            <div style="background: #f1f5f9; border-radius: 12px; padding: 12px; margin-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between;">
+                <span style="font-weight: 600;">${h.role}</span>
+                <span style="color: #64748b; font-size: 12px;">${h.daysRemaining} day${h.daysRemaining !== 1 ? 's' : ''} left</span>
+              </div>
+              <div style="font-size: 12px; color: #64748b; margin-top: 4px;">
+                ${h.name} • ${formatCurrency(h.salary)}/month
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      <div style="margin-top: 24px;">
+        <h3 style="font-size: 14px; color: #64748b; margin-bottom: 16px;">Your Team (${gameState.team.length}/10)</h3>
+        ${gameState.team.length === 0 ? `
+          <p style="color: #94a3b8; text-align: center; padding: 40px;">No employees yet. Hire your first team member!</p>
+        ` : gameState.team.map(member => `
+          <div class="team-member">
+            <div class="team-header">
+              <div>
+                <div class="member-name">${member.name}</div>
+                <div class="member-role">${member.role}</div>
+              </div>
+              <div class="member-salary">${formatCurrency(member.salary)}/mo</div>
+            </div>
+            <div style="font-size: 12px; color: #64748b; margin-top: 8px;">
+              Morale: ${Math.round(member.morale)}% | Loyalty: ${Math.round(member.loyalty)}% | Tenure: ${member.tenure} days
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill morale-bar" style="width: ${member.morale}%"></div>
+            </div>
+            <button class="danger" onclick="fireEmployee('${member.id}')" style="margin-top: 12px; width: 100%; font-size: 12px; padding: 8px;">
+              Terminate
+            </button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>Office Space</h2>
+      <p>Rent an office to improve team morale and productivity. Requires 5+ employees.</p>
+      <button class="secondary" onclick="toggleOffice()" style="margin-top: 16px; width: 100%;" ${gameState.team.length < 5 ? 'disabled' : ''}>
+        ${gameState.officeRented ? '🟢 Office Active ($100/day)' : '⚫ Rent Office ($100/day)'}
+        ${gameState.team.length < 5 ? '<br><small>Need 5+ employees</small>' : ''}
+      </button>
+    </div>
+  `;
+  }
+
     // =====================
     // INITIALIZE GAME
     // =====================
