@@ -2110,6 +2110,67 @@ function render() {
   `;
     }
 
+    function renderInvestors() {
+  const valuation = calculateValuation();
+  const growth = gameState.quarterlyGrowth.length > 0 
+    ? gameState.quarterlyGrowth[gameState.quarterlyGrowth.length - 1] * 100 
+    : 0;
+  
+  return `
+    <div class="valuation-card">
+      <div class="valuation-title">Company Valuation</div>
+      <div class="valuation-amount">${formatCurrency(valuation)}</div>
+      
+      <div class="equity-display">
+        <div class="equity-item">
+          <div class="equity-label">Your Equity</div>
+          <div class="equity-value">${gameState.equity}%</div>
+        </div>
+        <div class="equity-item">
+          <div class="equity-label">Market</div>
+          <div class="equity-value">${gameState.marketCondition}</div>
+        </div>
+        <div class="equity-item">
+          <div class="equity-label">Growth</div>
+          <div class="equity-value">${growth.toFixed(1)}%</div>
+        </div>
+      </div>
+      
+      <button onclick="pitchInvestors()" style="width: 100%; background: white; color: #5A4FF3; font-weight: 800;">
+        Pitch to Investors
+      </button>
+    </div>
+    
+    <div class="card">
+      <h2>Funding Options</h2>
+      <p>Pitch investors for funding in exchange for equity. Better metrics = better terms.</p>
+      
+      <div style="margin-top: 20px;">
+        <div style="background: #f1f5f9; border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+          <div style="font-weight: 800; margin-bottom: 4px;">Current Metrics</div>
+          <div style="font-size: 12px; color: #64748b;">
+            Users: ${formatNumber(gameState.users)}<br>
+            Daily Revenue: ${formatCurrency(calculateDailyRevenue())}<br>
+            Growth Rate: ${growth.toFixed(1)}%<br>
+            Market: ${gameState.marketCondition}
+          </div>
+        </div>
+        
+        <div style="background: #f1f5f9; border-radius: 12px; padding: 16px;">
+          <div style="font-weight: 800; margin-bottom: 4px;">Pitch Requirements</div>
+          <div style="font-size: 12px; color: #64748b;">
+            ${gameState.marketCondition === 'Bull' ? '🐂 Bull Market: Easier (20+ score)' :
+              gameState.marketCondition === 'Bear' ? '🐻 Bear Market: Harder (60+ score)' :
+              '⚖️ Steady Market: Standard (40+ score)'}<br><br>
+            Score = Growth% + (Users/1000) + (Revenue/100)<br>
+            Current Score: ${(growth + (gameState.users / 1000) + (calculateDailyRevenue() / 100)).toFixed(1)}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+    }
+
     // =====================
     // INITIALIZE GAME
     // =====================
