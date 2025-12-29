@@ -1049,67 +1049,66 @@ function nextDay() {
     showNotification(`Market is now ${marketCondition}`, 'info');
     }
 
-      // Team updates
-  gameState.team = gameState.team.map(member => {
-    let moraleChange = -0.5;
-    if (revenue - burn > 100) moraleChange += 1.5;
-    if (cash < 5000) moraleChange -= 4;   
+   // Team updates
+gameState.team = gameState.team.map(member => {
+  let moraleChange = -0.5;
+  if (revenue - burn > 100) moraleChange += 1.5;
+  if (cash < 5000) moraleChange -= 4;
+  
+  // Calculate new skill/experience
+  let newSkill = member.skill || 50;
+  let newExperience = member.experience || 0;
+  
+  if (day % 30 === 0) {
+    newSkill = Math.min(100, newSkill + 1);
+    newExperience += 30;
   }
   
-    // Calculate new skill/experience
-    let newSkill = member.skill || 50;
-    let newExperience = member.experience || 0;
-    
-    if (day % 30 === 0) {
-      newSkill = Math.min(100, newSkill + 1);
-      newExperience += 30;
+  return {
+    ...member,
+    morale: Math.max(0, Math.min(100, member.morale + moraleChange)),
+    loyalty: Math.max(0, Math.min(100, member.loyalty + (member.morale > 75 ? 0.3 : -0.8))),
+    tenure: member.tenure + 1,
+    skill: newSkill,
+    experience: newExperience
+  };
+}).filter(member => {  
+  // Chance to quit based on loyalty
+  const quitChance = (100 - member.loyalty) / 500;
+  if (Math.random() < quitChance) {
+    showNotification(`${member.name} has quit!`, 'error');
+    return false;
+  }
+  return true;
+});
+
+gameState.team = gameState.team.map(emp => {
+  // Junior → Senior promotion
+  if (emp.role === 'Junior Dev' && emp.experience >= 365 && emp.skill >= 70) {
+    if (confirm(`Promote ${emp.name} to Senior Dev? (+40% salary)`)) {
+      showNotification(`🎉 ${emp.name} promoted to Senior Dev!`, 'success');
+      return {
+        ...emp,
+        role: 'Senior Dev',
+        salary: Math.floor(emp.skill * 140)
+      };
     }
-    
-    return {
-      ...member,
-      morale: Math.max(0, Math.min(100, member.morale + moraleChange)),
-      loyalty: Math.max(0, Math.min(100, member.loyalty + (member.morale > 75 ? 0.3 : -0.8))),
-      tenure: member.tenure + 1,
-      skill: newSkill,
-      experience: newExperience
-    };
-  }).filter(member => {
-    // Chance to quit based on loyalty
-    const quitChance = (100 - member.loyalty) / 500;
-    if (Math.random() < quitChance) {
-      showNotification(`${member.name} has quit!`, 'error');
-      return false;
-    }
-    return true;
-  });
+  }
   
-  gameState.team = gameState.team.map(emp => {
-    // Junior → Senior promotion
-    if (emp.role === 'Junior Dev' && emp.experience >= 365 && emp.skill >= 70) {
-      if (confirm(`Promote ${emp.name} to Senior Dev? (+40% salary)`)) {
-        showNotification(`🎉 ${emp.name} promoted to Senior Dev!`, 'success');
-        return {
-          ...emp,
-          role: 'Senior Dev',
-          salary: Math.floor(emp.skill * 140) 
-        };
-      }
+  if (emp.role === 'Senior Dev' && emp.experience >= 730 && emp.skill >= 85) {
+    if (confirm(`Promote ${emp.name} to Tech Lead? (+60% salary)`)) {
+      showNotification(`🚀 ${emp.name} promoted to Tech Lead!`, 'success');
+      return {
+        ...emp,
+        role: 'Tech Lead',
+        salary: Math.floor(emp.skill * 180)
+      };
     }
-    
-    if (emp.role === 'Senior Dev' && emp.experience >= 730 && emp.skill >= 85) {
-      if (confirm(`Promote ${emp.name} to Tech Lead? (+60% salary)`)) {
-        showNotification(`🚀 ${emp.name} promoted to Tech Lead!`, 'success');
-        return {
-          ...emp,
-          role: 'Tech Lead',
-          salary: Math.floor(emp.skill * 180)
-        };
-      }
-    }
-    
-    return emp;
-  });
+  }
   
+  return emp;
+});
+
   // Update state
   gameState = {
     ...gameState,
