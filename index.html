@@ -1002,14 +1002,25 @@ function nextDay() {
   let bonusUsers = 0;
 
   // Calculate team velocity
-  let teamVelocity = 0.25; // You working alone = 0.25x speed
+  let teamVelocity = gameState.velocityMultiplier;
 
-  if (gameState.team.length > 0) {
-    // Sum of employee skills (Junior=50, Senior=70, etc.)
-    const totalSkill = gameState.team.reduce((sum, emp) => sum + (emp.skill || 50), 0);
-    teamVelocity = totalSkill / 100; // 50 skill = 0.5 days/day
+if (gameState.team.length > 0) {
+  const effectiveSkill = gameState.team.reduce((sum, emp) => {
+    const skill = emp.skill || (emp.role.includes('Senior') ? 70 : 50);
+    const moraleMultiplier = (emp.morale || 50) / 100;
+    return sum + (skill * moraleMultiplier);
+  }, 0);
+  
+  teamVelocity = effectiveSkill / 100;
+  
+  if (gameState.team.length === 0 && gameState.cash < 1000) {
+    teamVelocity = 0;
+    showNotification("Can't work without team or cash!", 'error');
   }
+}
 
+teamVelocity = Math.min(teamVelocity, 3.0);
+  
   gameState.features = gameState.features.map(feature => {
     if (feature.status === 'Developing') {
       // REAL progress based on team
