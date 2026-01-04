@@ -1287,7 +1287,6 @@ function fireEmployee(id) {
     render();
 }
 
-// Team updates (simplified - no quitting)
 gameState.team = gameState.team.map(member => {
   let moraleChange = -0.5;
   if (revenue - burn > 100) moraleChange += 1.5;
@@ -1310,8 +1309,6 @@ gameState.team = gameState.team.map(member => {
     experience: newExperience
   };
 });
-
-// REMOVE THE FILTER PART ENTIRELY
 
 function initializeFeatures() {
     if (gameState.features.length > 0) return; 
