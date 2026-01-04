@@ -1126,15 +1126,8 @@ gameState.team = gameState.team.map(member => {
     skill: newSkill,
     experience: newExperience
   };
-}).filter(member => {  
-  // Chance to quit based on loyalty
-  const quitChance = (100 - member.loyalty) / 500;
-  if (Math.random() < quitChance) {
-    showNotification(`${member.name} has quit!`, 'error');
-    return false;
-  }
-  return true;
-});
+
+}); // End of map, no filter
 
 gameState.team = gameState.team.map(emp => {
   // Junior → Senior promotion
