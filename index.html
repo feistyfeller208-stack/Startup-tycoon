@@ -1246,6 +1246,10 @@ if (newHires.length > 0) {
         showNotification(`${h.name} joined as ${h.role}`, 'success');  
     });
 
+  if (!Array.isArray(gameState.features)) {
+  gameState.features = [];
+    }
+
   // AUTO-RESUME genuinely stuck features (corrupted state only)
 const isStuckFeature = f =>
   f.status === 'Developing' && isNaN(f.remainingCost);
@@ -1274,7 +1278,8 @@ if (!gameState.hasShownDevActive) {
       `🛠️ Development active with ${gameState.team.length} employees`,
       'info'
     );
-    gameState.hasShownDevActive = true;
+    features: [],
+    gameState.hasShownDevActive = false;
   }
     }
 
