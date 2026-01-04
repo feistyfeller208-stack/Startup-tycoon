@@ -1246,21 +1246,30 @@ if (newHires.length > 0) {
         showNotification(`${h.name} joined as ${h.role}`, 'success');  
     });
 
-    // AUTO-RESUME stuck features when team grows  
-    const stuckFeatures = gameState.features.filter(f =>  
-        f.status === 'Developing' && (f.remainingCost <= 0 || isNaN(f.remainingCost))  
-    );
+   // AUTO-RESUME stuck features when team grows
+const stuckFeatures = gameState.features.filter(f => 
+  f.status === 'Developing' && (f.remainingCost <= 0 || isNaN(f.remainingCost))
+);
 
-    if (stuckFeatures.length > 0) {
-        gameState.features = gameState.features.map(f => {  
-            if (f.status === 'Developing' && (f.remainingCost <= 0 || isNaN(f.remainingCost))) {  
-                return { ...f, remainingCost: f.cost || 100 }; // Reset progress  
-            }
-            return f;  
-        });
-        showNotification('📈 Development resumed with new team!', 'info');  
+if (stuckFeatures.length > 0) {
+  gameState.features = gameState.features.map(f => {  
+    if (f.status === 'Developing' && (f.remainingCost <= 0 || isNaN(f.remainingCost))) {  
+      return { ...f, remainingCost: f.cost || 100 }; // Only reset if truly broken
     }
+    return f;  
+  });
+  showNotification('📈 Development resumed with new team!', 'info');  
 }
+
+// ALSO: Show notification when team is big enough to resume work
+if (gameState.team.length > 0) {
+  const stalledFeatures = gameState.features.filter(f => 
+    f.status === 'Developing' && gameState.team.length === 0
+  );
+  if (stalledFeatures.length > 0) {
+    showNotification(`🛠️ ${stalledFeatures.length} stalled features can now resume!`, 'success');
+  }
+    }
 
 saveGame();
     }
