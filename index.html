@@ -2102,13 +2102,13 @@ const progressText = isStalled ?
               </div>
               
               ${feature.status === 'Developing' ? `
-                <div class="feature-progress">
-                  <div class="feature-progress-fill" style="width: ${progressPercent}%"></div>
-                </div>
-                <div style="text-align: center; font-size: 12px; color: #64748b; margin-top: 8px;">
-                  ${Math.round(progressPercent)}% complete
-                </div>
-              ` : ''}
+  <div class="feature-progress">
+    <div class="feature-progress-fill" style="width: ${progressPercent}%"></div>
+  </div>
+  <div style="text-align: center; font-size: 12px; color: #64748b; margin-top: 8px;">
+    ${progressText}
+  </div>
+` : ''}
               
               ${feature.status === 'Available' ? `
                 <button onclick="startDeveloping('${feature.id}')" style="margin-top: 16px; width: 100%;">
