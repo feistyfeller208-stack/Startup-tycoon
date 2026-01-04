@@ -2068,11 +2068,17 @@ function render() {
                              feature.status === 'Live' ? 'status-live' :
                              feature.status === 'NeedsScale' ? 'status-needs-scale' : 'status-available';
           
+
           const remaining = feature.remainingCost || feature.cost || 100;
-const progress = feature.cost ? ((feature.cost - remaining) / feature.cost) * 100 : 0;
-const progressPercent = feature.status === 'Developing' 
-  ? Math.max(0, Math.min(100, progress))
-  : 0;
+const totalWorkDone = feature.cost - remaining;
+const rawProgress = feature.cost ? (totalWorkDone / feature.cost) * 100 : 0;
+const progressPercent = Math.max(0, Math.min(100, rawProgress));
+
+// Check if project is stalled (no team to work on it)
+const isStalled = gameState.team.length === 0 && feature.status === 'Developing';
+const progressText = isStalled ? 
+  `${Math.round(progressPercent)}% (STALLED - hire team)` : 
+  `${Math.round(progressPercent)}% complete`;
           
           return `
             <div class="feature-card ${statusClass}">
