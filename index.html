@@ -1215,75 +1215,78 @@ function startHiring(role, salary) {
 
 function processHiring() {
   if (!gameState.hiringQueue || gameState.hiringQueue.length === 0) return;
-  
-  let newHires = [];
-  
-  gameState.hiringQueue = gameState.hiringQueue.map(hiring => {
-    hiring.daysRemaining -= 1;
-    
-    if (hiring.daysRemaining <= 0) {
-      // Hire complete
-      newHires.push({
-        id: hiring.id,
-        name: hiring.name,
-        role: hiring.role,
-        salary: hiring.salary,
-        morale: 80,
-        loyalty: 80,
-        tenure: 0,
-        skill: hiring.role.includes('Senior') ? 70 : 50,
-        experience: 0
-      });
-      return null;
-    }
-    
-    return hiring;
-  }).filter(Boolean); // Remove null entries
 
-// Add new hires to team  
-if (newHires.length > 0) {
-    gameState.team.push(...newHires);  
-    newHires.forEach(h => {  
-        showNotification(`${h.name} joined as ${h.role}`, 'success');  
-    });
+  const newHires = [];
 
-  if (!Array.isArray(gameState.features)) {
-  gameState.features = [];
-    }
+  gameState.hiringQueue = gameState.hiringQueue
+    .map(hiring => {
+      hiring.daysRemaining -= 1;
 
-  // AUTO-RESUME genuinely stuck features (corrupted state only)
-const isStuckFeature = f =>
-  f.status === 'Developing' && isNaN(f.remainingCost);
+      if (hiring.daysRemaining <= 0) {
+        newHires.push({
+          id: hiring.id,
+          name: hiring.name,
+          role: hiring.role,
+          salary: hiring.salary,
+          morale: 80,
+          loyalty: 80,
+          tenure: 0,
+          skill: hiring.role.includes('Senior') ? 70 : 50,
+          experience: 0
+        });
+        return null;
+      }
 
-const stuckFeatures = gameState.features.filter(isStuckFeature);
+      return hiring;
+    })
+    .filter(Boolean);
 
-if (stuckFeatures.length > 0) {
-  gameState.features = gameState.features.map(f =>
-    isStuckFeature(f)
-      ? { ...f, remainingCost: f.cost || 100 }
-      : f
-  );
-
-  showNotification('📈 Development resumed with new team!', 'info');
-}
-
-// Notify once when development becomes active with a team
-if (!gameState.hasShownDevActive) {
-  const hasTeam = gameState.team.length > 0;
-  const hasDevelopingFeatures = gameState.features.some(
-    f => f.status === 'Developing'
-  );
-
-  if (hasTeam && hasDevelopingFeatures) {
-    showNotification(
-      `🛠️ Development active with ${gameState.team.length} employees`,
-      'info'
+  // Add hires
+  if (newHires.length > 0) {
+    gameState.team.push(...newHires);
+    newHires.forEach(h =>
+      showNotification(`${h.name} joined as ${h.role}`, 'success')
     );
-    gameState.hasShownDevActive = true;
   }
-    }
 
-saveGame();
+  // Defensive state fix
+  if (!Array.isArray(gameState.features)) {
+    gameState.features = [];
+  }
+
+  // Resume corrupted/stuck features
+  const isStuckFeature = f =>
+    f.status === 'Developing' && isNaN(f.remainingCost);
+
+  const stuckFeatures = gameState.features.filter(isStuckFeature);
+
+  if (stuckFeatures.length > 0) {
+    gameState.features = gameState.features.map(f =>
+      isStuckFeature(f)
+        ? { ...f, remainingCost: f.cost || 100 }
+        : f
+    );
+
+    showNotification('📈 Development resumed with new team!', 'info');
+  }
+
+  // One-time dev activation notice
+  if (!gameState.hasShownDevActive) {
+    const hasTeam = gameState.team.length > 0;
+    const hasDeveloping = gameState.features.some(
+      f => f.status === 'Developing'
+    );
+
+    if (hasTeam && hasDeveloping) {
+      showNotification(
+        `🛠️ Development active with ${gameState.team.length} employees`,
+        'info'
+      );
+      gameState.hasShownDevActive = true;
+    }
+  }
+
+  saveGame();
     }
 
 function fireEmployee(id) {
