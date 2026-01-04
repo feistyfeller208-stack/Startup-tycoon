@@ -1246,26 +1246,35 @@ if (newHires.length > 0) {
         showNotification(`${h.name} joined as ${h.role}`, 'success');  
     });
 
-   // AUTO-RESUME stuck features when team grows
-const stuckFeatures = gameState.features.filter(f => 
-  f.status === 'Developing' && (f.remainingCost <= 0 || isNaN(f.remainingCost))
-);
+  // AUTO-RESUME genuinely stuck features (corrupted state only)
+const isStuckFeature = f =>
+  f.status === 'Developing' && isNaN(f.remainingCost);
+
+const stuckFeatures = gameState.features.filter(isStuckFeature);
 
 if (stuckFeatures.length > 0) {
-  gameState.features = gameState.features.map(f => {  
-    if (f.status === 'Developing' && (f.remainingCost <= 0 || isNaN(f.remainingCost))) {  
-      return { ...f, remainingCost: f.cost || 100 };
-    }
-    return f;  
-  });
-  showNotification('📈 Development resumed with new team!', 'info');  
+  gameState.features = gameState.features.map(f =>
+    isStuckFeature(f)
+      ? { ...f, remainingCost: f.cost || 100 }
+      : f
+  );
+
+  showNotification('📈 Development resumed with new team!', 'info');
 }
 
-// Show notification when we have a team and developing features
-if (gameState.team.length > 0) {
-  const developingFeatures = gameState.features.filter(f => f.status === 'Developing');
-  if (developingFeatures.length > 0) {
-    showNotification(`🛠️ Development active with ${gameState.team.length} employees`, 'info');
+// Notify once when development becomes active with a team
+if (!gameState.hasShownDevActive) {
+  const hasTeam = gameState.team.length > 0;
+  const hasDevelopingFeatures = gameState.features.some(
+    f => f.status === 'Developing'
+  );
+
+  if (hasTeam && hasDevelopingFeatures) {
+    showNotification(
+      `🛠️ Development active with ${gameState.team.length} employees`,
+      'info'
+    );
+    gameState.hasShownDevActive = true;
   }
     }
 
