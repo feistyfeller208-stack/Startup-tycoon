@@ -1287,10 +1287,10 @@ function fireEmployee(id) {
     render();
 }
 
-gameState.team = gameState.team.map(member => {
+  gameState.team = gameState.team.map(member => {
   let moraleChange = -0.5;
   if (revenue - burn > 100) moraleChange += 1.5;
-  if (cash wireless  < 5000) moraleChange -= 4;
+  if (cash < 5000) moraleChange -= 4;
   
   let newSkill = member.skill || 50;
   let newExperience = member.experience || 0;
@@ -1308,6 +1308,7 @@ gameState.team = gameState.team.map(member => {
     skill: newSkill,
     experience: newExperience
   };
+}); 
 
 function initializeFeatures() {
     if (gameState.features.length > 0) return; 
