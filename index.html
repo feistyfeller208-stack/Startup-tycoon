@@ -1127,8 +1127,6 @@ gameState.team = gameState.team.map(member => {
     experience: newExperience
   };
 
-}); // End of map, no filter
-
 gameState.team = gameState.team.map(emp => {
   // Junior → Senior promotion
   if (emp.role === 'Junior Dev' && emp.experience >= 365 && emp.skill >= 70) {
