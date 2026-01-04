@@ -1280,63 +1280,40 @@ function processHiring() {
   saveGame();
     }
 
-function fireEmployee(id) {
-    gameState.team = gameState.team.filter(m => m.id !== id);  
-    showNotification('Employee terminated', 'info');  
-    saveGame();  
+  function fireEmployee(id) {
+    gameState.team = gameState.team.filter(m => m.id !== id);
+    showNotification('Employee terminated', 'info');
+    saveGame();
     render();
 }
 
-  gameState.team = gameState.team.map(member => {
-  let moraleChange = -0.5;
-  if (revenue - burn > 100) moraleChange += 1.5;
-  if (cash < 5000) moraleChange -= 4;
-  
-  let newSkill = member.skill || 50;
-  let newExperience = member.experience || 0;
-  
-  if (day % 30 === 0) {
-    newSkill = Math.min(100, newSkill + 1);
-    newExperience += 30;
-  }
-  
-  return {
-    ...member,
-    morale: Math.max(0, Math.min(100, member.morale + moraleChange)),
-    loyalty: Math.max(0, Math.min(100, member.loyalty + (member.morale > 75 ? 0.3 : -0.8))),
-    tenure: member.tenure + 1,
-    skill: newSkill,
-    experience: newExperience
-  };
-}); 
-
 function initializeFeatures() {
-    if (gameState.features.length > 0) return; 
-  
-  const features = {
-    'SaaS': [
-      { id: 'auth', name: 'Authentication', description: 'User login system', cost: 90, capacity: 500, revenuePerUser: 0.05, userBonus: 50, prerequisites: [] },
-      { id: 'billing', name: 'Billing System', description: 'Recurring payments', cost: 150, capacity: 2000, revenuePerUser: 0.10, userBonus: 100, prerequisites: ['auth'] },
-      { id: 'analytics', name: 'Analytics', description: 'User insights dashboard', cost: 120, capacity: 1000, revenuePerUser: 0.07, userBonus: 75, prerequisites: ['auth'] }
-    ],
-    'Gaming': [
-      { id: 'core', name: 'Core Gameplay', description: 'Basic game mechanics', cost: 120, capacity: 1000, revenuePerUser: 0.02, userBonus: 100, prerequisites: [] },
-      { id: 'multiplayer', name: 'Multiplayer', description: 'Online play features', cost: 180, capacity: 3000, revenuePerUser: 0.05, userBonus: 200, prerequisites: ['core'] },
-      { id: 'store', name: 'In-Game Store', description: 'Microtransactions', cost: 150, capacity: 2000, revenuePerUser: 0.08, userBonus: 150, prerequisites: ['core'] }
-    ],
-    'FinTech': [
-      { id: 'wallet', name: 'Digital Wallet', description: 'Basic payment system', cost: 180, capacity: 1000, revenuePerUser: 0.08, userBonus: 80, prerequisites: [] },
-      { id: 'invest', name: 'Investment Tools', description: 'Stock trading features', cost: 240, capacity: 2000, revenuePerUser: 0.15, userBonus: 120, prerequisites: ['wallet'] }
-    ]
-  };
-  
-  gameState.features = (features[gameState.startupType] || features['SaaS']).map(f => ({
-    ...f,
-    status: f.prerequisites.length === 0 ? 'Available' : 'Locked',
-    remainingCost: f.cost || 0, 
-    wasScaling: false,
-    techDebt: 0
-  }));
+    if (gameState.features.length > 0) return;
+    
+    const features = {
+        'SaaS': [
+            { id: 'auth', name: 'Authentication', description: 'User login system', cost: 90, capacity: 500, revenuePerUser: 0.05, userBonus: 50, prerequisites: [] },
+            { id: 'billing', name: 'Billing System', description: 'Recurring payments', cost: 150, capacity: 2000, revenuePerUser: 0.10, userBonus: 100, prerequisites: ['auth'] },
+            { id: 'analytics', name: 'Analytics', description: 'User insights dashboard', cost: 120, capacity: 1000, revenuePerUser: 0.07, userBonus: 75, prerequisites: ['auth'] }
+        ],
+        'Gaming': [
+            { id: 'core', name: 'Core Gameplay', description: 'Basic game mechanics', cost: 120, capacity: 1000, revenuePerUser: 0.02, userBonus: 100, prerequisites: [] },
+            { id: 'multiplayer', name: 'Multiplayer', description: 'Online play features', cost: 180, capacity: 3000, revenuePerUser: 0.05, userBonus: 200, prerequisites: ['core'] },
+            { id: 'store', name: 'In-Game Store', description: 'Microtransactions', cost: 150, capacity: 2000, revenuePerUser: 0.08, userBonus: 150, prerequisites: ['core'] }
+        ],
+        'FinTech': [
+            { id: 'wallet', name: 'Digital Wallet', description: 'Basic payment system', cost: 180, capacity: 1000, revenuePerUser: 0.08, userBonus: 80, prerequisites: [] },
+            { id: 'invest', name: 'Investment Tools', description: 'Stock trading features', cost: 240, capacity: 2000, revenuePerUser: 0.15, userBonus: 120, prerequisites: ['wallet'] }
+        ]
+    };
+    
+    gameState.features = (features[gameState.startupType] || features['SaaS']).map(f => ({
+        ...f,
+        status: f.prerequisites.length === 0 ? 'Available' : 'Locked',
+        remainingCost: f.cost || 0,
+        wasScaling: false,
+        techDebt: 0
+    }));
 }
 
 function initializeMarketing() {
