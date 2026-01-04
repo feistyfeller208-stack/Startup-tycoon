@@ -1016,11 +1016,34 @@ if (gameState.team.length > 0) {
   
   if (gameState.team.length === 0 && gameState.cash < 1000) {
     teamVelocity = 0;
-    showNotification("Can't work without team or cash!", 'error');
+     work without team or cash!", 'error');
   }
 }
 
 teamVelocity = Math.min(teamVelocity, 3.0);
+
+  gameState.team = gameState.team.map(member => {
+  let moraleChange = -0.5;
+  if (revenue - burn > 100) moraleChange += 1.5;
+  if (cash < 5000) moraleChange -= 4;
+  
+  let newSkill = member.skill || 50;
+  let newExperience = member.experience || 0;
+  
+  if (day % 30 === 0) {
+    newSkill = Math.min(100, newSkill + 1);
+    newExperience += 30;
+  }
+  
+  return {
+    ...member,
+    morale: Math.max(0, Math.min(100, member.morale + moraleChange)),
+    loyalty: Math.max(0, Math.min(100, member.loyalty + (member.morale > 75 ? 0.3 : -0.8))),
+    tenure: member.tenure + 1,
+    skill: newSkill,
+    experience: newExperience
+  };
+}); 
   
   gameState.features = gameState.features.map(feature => {
     if (feature.status === 'Developing') {
@@ -1280,7 +1303,7 @@ function processHiring() {
   saveGame();
     }
 
-  function fireEmployee(id) {
+function fireEmployee(id) {
     gameState.team = gameState.team.filter(m => m.id !== id);
     showNotification('Employee terminated', 'info');
     saveGame();
@@ -1314,7 +1337,7 @@ function initializeFeatures() {
         wasScaling: false,
         techDebt: 0
     }));
-}
+  }
 
 function initializeMarketing() {
   if (gameState.marketingChannels.length > 0) return;
