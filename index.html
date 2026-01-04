@@ -1247,6 +1247,21 @@ function processHiring() {
     });
   }
   
+  // AUTO-RESUME stuck features when team grows
+  const stuckFeatures = gameState.features.filter(f => 
+    f.status === 'Developing' && (f.remainingCost <= 0 || isNaN(f.remainingCost))
+  );
+  
+  if (stuckFeatures.length > 0) {
+    gameState.features = gameState.features.map(f => {
+      if (f.status === 'Developing' && (f.remainingCost <= 0 || isNaN(f.remainingCost))) {
+        return { ...f, remainingCost: f.cost || 100 }; // Reset progress
+      }
+      return f;
+    });
+    showNotification('📈 Development resumed with new team!', 'info');
+  }
+  }
   saveGame();
 }
 
@@ -1279,7 +1294,7 @@ function initializeFeatures() {
   if (gameState.features.length > 0) return;
   
   const features = {
-    'SaaS': [
+    'SaaS' : [
       { id: 'auth', name: 'Authentication', description: 'User login system', cost: 90, capacity: 500, revenuePerUser: 0.05, userBonus: 50, prerequisites: [] },
       { id: 'billing', name: 'Billing System', description: 'Recurring payments', cost: 150, capacity: 2000, revenuePerUser: 0.10, userBonus: 100, prerequisites: ['auth'] },
       { id: 'analytics', name: 'Analytics', description: 'User insights dashboard', cost: 120, capacity: 1000, revenuePerUser: 0.07, userBonus: 75, prerequisites: ['auth'] }
