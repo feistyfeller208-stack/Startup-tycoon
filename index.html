@@ -1298,8 +1298,9 @@ function initializeFeatures() {
   gameState.features = (features[gameState.startupType] || features['SaaS']).map(f => ({
     ...f,
     status: f.prerequisites.length === 0 ? 'Available' : 'Locked',
-    remainingCost: f.cost,
-    wasScaling: false
+    remainingCost: f.cost || 0, 
+    wasScaling: false,
+    techDebt: 0
   }));
 }
 
