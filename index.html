@@ -1289,23 +1289,32 @@ function fireEmployee(id) {
     render();
 }
 
-function checkEmployeeRetention() {
-    const monthlyQuitChance = 0.05; // 5% base monthly  
+// Team updates (simplified - no quitting)
+gameState.team = gameState.team.map(member => {
+  let moraleChange = -0.5;
+  if (revenue - burn > 100) moraleChange += 1.5;
+  if (cash wireless  < 5000) moraleChange -= 4;
+  
+  // Calculate new skill/experience
+  let newSkill = member.skill || 50;
+  let newExperience = member.experience || 0;
+  
+  if (day % 30 === 0) {
+    newSkill = Math.min(100, newSkill + 1);
+    newExperience += 30;
+  }
+  
+  return {
+    ...member,
+    morale: Math.max(0, Math.min(100, member.morale + moraleChange)),
+    loyalty: Math.max(0, Math.min(100, member.loyalty + (member.morale > 75 ? 0.3 : -0.8))),
+    tenure: member.tenure + 1,
+    skill: newSkill,
+    experience: newExperience
+  };
+});
 
-    gameState.team = gameState.team.map(emp => {  
-        const salaryRatio = emp.salary / marketRate(emp.role);  
-        const quitRisk = monthlyQuitChance  
-            * (salaryRatio < 0.8 ? 2.0 : 1.0) // Underpaid  
-            * (emp.morale < 50 ? 1.5 : 1.0) // Low morale  
-            * (gameState.cash < 10000 ? 1.3 : 1.0); // Company struggling  
-
-        if (Math.random() < quitRisk) {  
-            showNotification(`${emp.name} quit (${emp.role})`, 'error');  
-            return null;  
-        }
-        return emp;  
-    }).filter(Boolean);  
-}
+// REMOVE THE FILTER PART ENTIRELY
 
 function initializeFeatures() {
     if (gameState.features.length > 0) return; 
