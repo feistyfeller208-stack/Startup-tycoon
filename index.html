@@ -2068,9 +2068,11 @@ function render() {
                              feature.status === 'Live' ? 'status-live' :
                              feature.status === 'NeedsScale' ? 'status-needs-scale' : 'status-available';
           
-          const progressPercent = feature.status === 'Developing' 
-            ? Math.max(0, Math.min(100, ((feature.cost - feature.remainingCost) / feature.cost) * 100))
-            : 0;
+          const remaining = feature.remainingCost || feature.cost || 100;
+const progress = feature.cost ? ((feature.cost - remaining) / feature.cost) * 100 : 0;
+const progressPercent = feature.status === 'Developing' 
+  ? Math.max(0, Math.min(100, progress))
+  : 0;
           
           return `
             <div class="feature-card ${statusClass}">
